@@ -29,8 +29,9 @@ const restaurantModal = (restaurant, menu) => {
 
   // rakennetaan koko listan HTML
   let listaHTML = '';
+
   // haetaan menun ruokalajit (course)
-  for (const course of menu) {
+  menu.forEach((course) => {
     // destrukturointi
     const {name, price, diets} = course;
     //  listaHTML = `<li>${course.name}, hinta, allergiat</li>`
@@ -40,7 +41,7 @@ const restaurantModal = (restaurant, menu) => {
       <p>Hinta: ${price || 'ei ilmoitettu'} €</p>
       <p>Allergeenit: ${diets || 'ei ilmoitettu'}</p>
     </li>`;
-  }
+  });
 
   // rakennetaan modaalin HTML
   const ravintolaHTML = `

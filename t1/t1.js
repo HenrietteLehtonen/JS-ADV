@@ -9,35 +9,68 @@ const kohde = document.querySelector('tbody');
 const modaali = document.querySelector('dialog');
 const info = document.querySelector('#info');
 const closeModal = document.querySelector('#close-modal');
+const sodexoBtn = document.querySelector('#sodexo-btn');
+const compassBtn = document.querySelector('#compass-btn');
+const resetoBtn = document.querySelector('#reset-btn');
 
+// ------------- CLICK BTN ---------------
+
+// sulje modaali
 closeModal.addEventListener('click', () => {
   modaali.close();
 });
-// closeModal.addEventListener('click', function () {
-//   modaali.close();
-// });
-
-// async sulkeiden vasemmalle puolelle!
 
 // RAVINTOLALISTA
 
-const teeRavintolaLista = async () => {
+const haeRavintolat = async () => {
   // hakee ravintolat apinURLista
-  const restaurants = await fetchData(apiURL + '/api/v1/restaurants');
+  return await fetchData(apiURL + '/api/v1/restaurants');
+};
+
+// ------- TEE RAVINTOLAT
+
+const teeRavintolaLista = async (restaurants) => {
+  kohde.innerHTML = '';
+
+  // ------ BTN SODEXO & COMPASS & RESET -------
+
+  sodexoBtn.addEventListener('click', () => {
+    const filteredRest = restaurants.filter((restaurant) => {
+      if (restaurant.company === 'Sodexo') {
+        return true;
+        //(restaurant) => return restaurant.company === 'Sodexo'
+      }
+    });
+    teeRavintolaLista(filteredRest);
+  });
+
+  compassBtn.addEventListener('click', () => {
+    const filteredRest = restaurants.filter((restaurant) => {
+      if (restaurant.company === 'Compass Group') {
+        return true;
+      }
+    });
+    teeRavintolaLista(filteredRest);
+  });
+
+  resetoBtn.addEventListener('click', () => {
+    return teeRavintolaLista(raflat);
+  });
 
   // järjestää ravintolat aakkosjärjestykseen
   restaurants.sort((a, b) => a.name.localeCompare(b.name));
   console.log(restaurants);
 
   // --------- HAETAAN RAVINTOLAT ---------
-  for (const restaurant of restaurants) {
+  // for (const restaurant of restaurants)
+  restaurants.forEach((restaurant) => {
     if (restaurant) {
       // destrukturointi
       const {name, address, _id, company, postalCode, city, phone} = restaurant;
 
       // ----------- RIVIT ravintoloille  -------------
-      // tehdään rivi, joka kutsuu komponenttia restaurantROW(restaurant) parametrillä
-      // --> lisätään HTML rivi
+
+      // tehdään rivi, joka kutsuu komponenttia restaurantROW(restaurant)
       const rivi = restaurantRow(restaurant);
 
       // -------- RIVI CLICK ------------
@@ -50,9 +83,11 @@ const teeRavintolaLista = async () => {
 
         // higlight riveille klikkauksesta
         const korostetut = document.querySelectorAll('.highlight');
-        for (const korostettu of korostetut) {
+
+        korostetut.forEach((korostettu) => {
           korostettu.classList.remove('highlight');
-        }
+        });
+
         rivi.classList.add('highlight');
 
         // ---------- Tulostaa päivän ruokalista -------------
@@ -70,16 +105,8 @@ const teeRavintolaLista = async () => {
 
       kohde.append(rivi);
     }
-  }
+  });
 };
 
-teeRavintolaLista();
-
-const numbers = [1, 2, 3, 4, 5];
-
-const sum = numbers.reduce(
-  (accumulator, currentValue) => accumulator + currentValue,
-  10
-);
-
-console.log(sum);
+const raflat = await haeRavintolat();
+teeRavintolaLista(raflat);
